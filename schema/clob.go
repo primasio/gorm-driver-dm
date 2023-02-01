@@ -2,9 +2,7 @@ package dmSchema
 
 import (
 	"database/sql/driver"
-	"errors"
 	"fmt"
-
 	"github.com/nfjBill/gorm-driver-dm/dmr"
 )
 
@@ -23,13 +21,14 @@ func (clob *Clob) Scan(v interface{}) error {
 		tmp := v.(*dmr.DmClob)
 		le, err := tmp.GetLength()
 		if err != nil {
-			return errors.New(fmt.Sprint("err：", err))
+			return fmt.Errorf("err：%w", err)
 		}
 
 		str, err := tmp.ReadString(1, int(le))
 		*clob = Clob(str)
 		break
-
+	case []uint8:
+		*clob = Clob(v.([]uint8))
 	default:
 		*clob = Clob(v.(string))
 	}
